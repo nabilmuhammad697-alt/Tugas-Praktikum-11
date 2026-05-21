@@ -1,31 +1,36 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ArticleController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
+// Rute umum non-autentikasi
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/beranda', function () {
+    return view('user.beranda');
+});
+Route::get('/tentang', function () {
+    return view('user.tentang');
+});
 
+// Autentikasi bawaan Laravel UI
 Auth::routes();
-
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Route Group Middleware Auth untuk bagian backend Admin
+// Rute Group untuk Admin (Hanya boleh diakses oleh user yang sudah Login)
 Route::middleware(['auth'])->group(function () {
 
+    // Halaman Utama Dashboard
     Route::get('/admin/dashboard', function () {
         return view('admin.dashboard');
-    });
+    })->name('admin.dashboard');
+
+    // CRUD Pengguna, Kategori & Berita
+    Route::resource('/admin/users', UserController::class);
+    Route::resource('/admin/categories', CategoryController::class);
+    Route::resource('/admin/articles', ArticleController::class);
 
 });
